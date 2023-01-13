@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Exemple basique de client (il n'est pas nécessaire qu'il soit situé sur le serveur, exemple : une application
+    android sur le play store est completement isolée)</h1>
+
+    <form onsubmit="return connexion(event)">
+    <input id="email">
+    <input id="password">
+    <input type="submit" value="Se connecter">
+    </form>
+    <button   onclick="afficherNombreUtilisateur()"
+            value="">afficher le nombre d'utilisateur</button>
+
+    <script>
+    function afficherNombreUtilisateur() {      
+        fetch("http://localhost:8080/users", {
+        headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Authorization": localStorage.getItem("jwt")
+        }
+    })
+        .then(resultat =>resultat.json())
+        .then(listeUtilisateur =>console.log(listeUtilisateur))
+}
+
+    function connexion(event) {
+        event.preventDefault();
+        const email = document.getElementById("email").value
+        const password = document.getElementById("password").value
+
+        const utilisateur = {
+        email: email,
+        password: password
+        }
+
+        const jsonUtilisateur = JSON.stringify(utilisateur)
+
+        fetch("http://localhost:8080/connection", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        },
+        body: jsonUtilisateur
+        })
+        .then(resultat => resultat.text())
+        .then(jwt => {
+            localStorage.setItem("jwt",jwt)
+        })
+
+        return false;
+    }
+
+    </script>
+
+</body>
+
+</html>
