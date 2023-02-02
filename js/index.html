@@ -1,0 +1,44 @@
+<ul id="liste-utilisateur">
+
+</ul>
+<script>
+    fetch("http://localhost:8080/utilisateurliste")
+    .then(resultat=>resultat.json())
+    .then(listeUtilisateur=> {      
+        const ul = document.getElementById('liste-utilisateur')
+        listeUtilisateur.forEach(utilisateur => {
+            const li = document.createElement('li')
+            li.innerHTML = utilisateur.nom + " " + utilisateur.prenom
+
+            const boutonSupprimer = document.createElement('button')
+            boutonSupprimer.innerHTML ='X'
+            li.appendChild(boutonSupprimer)
+
+            boutonSupprimer.addEventListener("click",e=>{
+                fetch("http://localhost:8080/utilisateur/" + utilisateur.id,{method: "DELETE"})
+                .then(resultat=> ul.removeChild(li))
+            })
+
+            ul.appendChild(li)
+        });
+    })
+    function ajouterutilisateur(){
+        const utilisateur={
+            nom: document.getElementById("nom").value,
+            prenom: document.getElementById("prenom").value
+        }
+        fetch("http://localhost:8080/utilisateur",{
+            method: "POST",
+            body: JSON.stringify(utilisateur),
+            headers:{"content-type" : "application/json"}
+        })
+        .then((resultat) => console.log(resultat))
+        return false
+    }
+</script>
+
+<form onsubmit="return ajouterutilisateur()">
+    <input id="nom">
+    <input id="prenom">
+    <input type="submit" value="ajouter">
+</form>
